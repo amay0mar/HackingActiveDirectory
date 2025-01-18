@@ -16,10 +16,16 @@
 <h2>Environments Used </h2>
 
 - <b>Windows 10</b> (21H2)
-- <b>Ubuntu Server 22.04</b> (21H2)
-- <b>Kali Linux (attack machine)</b> (21H2)
+- <b>Ubuntu Server 22.04</b>
+- <b>Kali Linux (attack machine)</b>
 
 <h2>Program walk-through:</h2>
+<h3>Part One (Install & setting up VMs:</h3>
+<h3>Part Two (Generating C2 Payload):</h3>
+<h3>Part Three (Emulating an adversary):</h3>
+<h3>Part Four (Blocking an attack):</h3>
+<h3>Part Five (False Positive tuning in LimaCharlie):</h3>
+<h3>Part Six (Detection rule & YARA scans):</h3>
 
 <p align="center">
 Launch the utility: <br/>
