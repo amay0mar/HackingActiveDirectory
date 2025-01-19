@@ -12,7 +12,11 @@ Setting up 2 VM machine to mimic a SOC environment. One Kali Linux VM to emulate
 <h2>Languages and Utilities Used</h2>
 
 - <b>PowerShell</b> 
-- <b>Diskpart</b>
+- <b>Linux</b>
+- <b>Sysmon</b>
+- <b>LimaCharlie</b>
+- <b>YARA</b>
+- <b>C2 session payload</b>
 
 <h2>Environments Used </h2>
 
