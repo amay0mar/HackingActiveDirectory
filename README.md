@@ -29,7 +29,7 @@
 
 <p align="center">
 Launch the utility: <br/>
-<img src="https://github.com/amay0mar/SOCAnalystLab/blob/main/Ubuntu%20Server%2064-bit-2025-01-16-23-22-33.png?raw=true/>
+![image alt](https://github.com/amay0mar/SOCAnalystLab/blob/main/Ubuntu%20Server%2064-bit-2025-01-16-23-22-33.png?raw=true)
 <br />
 <br />
 Select the disk:  <br/>
