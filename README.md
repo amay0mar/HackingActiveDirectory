@@ -28,7 +28,7 @@
 <h3>Part Six (Detection rule & YARA scans):</h3>
 
 <p align="center">
-Launch the utility: <br/>
+Installing Ubuntu: <br/>
 ![image alt](https://github.com/amay0mar/SOCAnalystLab/blob/main/Ubuntu%20Server%2064-bit-2025-01-16-23-22-33.png?raw=true)
 <br />
 <br />
