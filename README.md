@@ -4,6 +4,7 @@
  
 
 <h2>Description</h2>
+Setting up 2 VM machine to mimic a SOC environment. One Kali Linux VM to emulate and attacker. Installing Sysmon on Windows VM for telemetry on our Windows endpoint. Installing LimaCharlie EDR on our Windows VM using as a cross-platform EDR agent, that also handles all of the log shipping/ingestion and a plus having a threat detection engine. Using our Kali Linux VM we are going to make some noise, generating C2 payload and and then proceeding to our command and control session. We will also craft our own detection rules and proceeding to block any attacks. Lastly we are going to use some YARA scanning, the goal is to take advantage of a more advanced capability. To automatically scan files or processes for the presence of malware based on a YARA signature. 
 
 <br />
 
