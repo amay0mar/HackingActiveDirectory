@@ -63,7 +63,7 @@ After reboot now we make sure DNS and outbound pings are working > make sure to 
 <img src="https://i.imgur.com/0pTReUk.png"/>
 <br />
 <br />
-Sanitization complete:  <br/>
+Windows 10 ent VM configurations:  <br/>
 <img src="https://i.imgur.com/K71yaM2.png" height="80%" width="80%" alt="Disk Sanitization Steps"/>
 <br />
 <br />
