@@ -20,32 +20,47 @@
 - <b>Kali Linux (attack machine)</b>
 
 <h2>Program walk-through:</h2>
-<h3>Part One (Install & setting up VMs:</h3>
+
 <h3>Part Two (Generating C2 Payload):</h3>
 <h3>Part Three (Emulating an adversary):</h3>
 <h3>Part Four (Blocking an attack):</h3>
 <h3>Part Five (False Positive tuning in LimaCharlie):</h3>
 <h3>Part Six (Detection rule & YARA scans):</h3>
+<br/>
+<br/>
+<br/>
+<br/>
 
 <p align="center">
+<h3>Part One (Install & setting up VMs:</h3>
 Installing Ubuntu: <br/>
-![image alt](https://github.com/amay0mar/SOCAnalystLab/blob/main/Ubuntu%20Server%2064-bit-2025-01-16-23-22-33.png?raw=true)
+We need to take a few steps to set our static IP address for this VM.<br/>
+<br />
+<img src="https://i.imgur.com/nl6DEQ6.png"/>
 <br />
 <br />
-Select the disk:  <br/>
-<img src="https://i.imgur.com/tcTyMUE.png" height="80%" width="80%" alt="Disk Sanitization Steps"/>
+Finding out the gateway IP of your VMware workstation NAT network:  <br/>
+VMware workstation > click Edit menu on top > Click "Virtual Network Editor" > Select Type : "NAT" network > and click "NAT Settings" > make sure to take down the Gateway address IP and Subnet mask <br/>
+<br />
+<img src="https://i.imgur.com/BwFP3Er.png"/>
 <br />
 <br />
-Enter the number of passes: <br/>
-<img src="https://i.imgur.com/nCIbXbg.png" height="80%" width="80%" alt="Disk Sanitization Steps"/>
+Now back to Ubuntu Installer we are going to change the interface from DHCPv4 to Manual or static: <br/>
+Now got back to Network Connections > drop down to "ens33 eth" and select "edit IPv4" > after that select "Manual" > now a window has appeared and just plug in the required IP from our previous steps <br/>
+<br />
+<img src="https://i.imgur.com/9JN0v2l.png"/>
 <br />
 <br />
-Confirm your selection:  <br/>
-<img src="https://i.imgur.com/cdFHBiU.png" height="80%" width="80%" alt="Disk Sanitization Steps"/>
+Continue to Install Ubuntu:  <br/>
+Once Static IP has been set > continue to next installer > Make sure to set memorable username/password > Next step "Install OpenSSH server" > then continue isntalling OS until "Install Complete" and hit "reboot now" <br/>
+<br />
+<img src="https://i.imgur.com/EtZPCjM.png"/>
 <br />
 <br />
-Wait for process to complete (may take some time):  <br/>
-<img src="https://i.imgur.com/JL945Ga.png" height="80%" width="80%" alt="Disk Sanitization Steps"/>
+Installation and Reboot complete:  <br/>
+After reboot now we make sure DNS and outbound pings are working > make sure to login in with the your credentials > type in "ping -c 2 google.com" > looks like we pinged right now we are all set for our ubuntu server <br/>
+<br />
+<img src="https://i.imgur.com/0pTReUk.png"/>
 <br />
 <br />
 Sanitization complete:  <br/>
