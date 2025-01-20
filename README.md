@@ -69,7 +69,10 @@ After reboot now we make sure DNS and outbound pings are working > make sure to 
 <br />
 <br />
 Windows 10 ent VM configurations:  <br/>
-<img src="https://i.imgur.com/K71yaM2.png" height="80%" width="80%" alt="Disk Sanitization Steps"/>
+Disabling the Windows defender so it doesn't interfere with the shady stuff we are planning to do. Here are the few steps I did: <br/>
+Disabling Tamper Protection > click "Start" > "Settings" > "Privacy & Security" > " Windows Security" > "Virus & threat protection" > Under this tab click " Manage settings" > Toggle off the "Tamper Protection"<br/>
+<br /> 
+<img src="https://i.imgur.com/9R3wDfE.png"/>
 <br />
 <br />
 Observe the wiped disk:  <br/>
