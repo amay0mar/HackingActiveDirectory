@@ -75,8 +75,62 @@ Disabling Tamper Protection > click "Start" > "Settings" > "Privacy & Security" 
 <img src="https://i.imgur.com/9R3wDfE.png"/>
 <br />
 <br />
-Observe the wiped disk:  <br/>
-<img src="https://i.imgur.com/AeZkvFQ.png" height="80%" width="80%" alt="Disk Sanitization Steps"/>
+Permanently Disable defender via group policy editor:  <br/>
+click "start" menu > type "cmd" into the search bar > Right click "command promt" and click " Run as administrator" and then run the following Command "gpedit.msc" <br/>
+<img src="https://i.imgur.com/wIcheNb.png"/>
+<br />
+Also we can disable defendiar via Group Policy Editor : <br/>
+Click computer configuration > Administrative Templates > Windows Components > Microsoft Defender Antivirus > Double-click "Turn off Microsoft Defender Antivirus"> select "Enabled" > click apply and ok <br/>
+<br />
+Permanently Disable Defender via Registry: <br/>
+Open cmd promt with administrative privileges and type the following command: "REG ADD "hklm\software\policies\microsoft\windows defender" /v DisableAntiSpyware /t REG_DWORD /d 1 /f"
+<img src="https://i.imgur.com/CBejFpA.png"/>
+<br />
+Installing Sysmon in Windows VM: <br/>
+Now launch Administrative Powershell > Download Syszmon with the following command > "Invoke-WebRequest -Uri https://download.sysinternals.com/files/Sysmon.zip -OutFile C:\Windows\Temp\Sysmon.zip" <br/>
+We unzip Sysmon.zip using this command: "Expand-Archive -LiteralPath C:\Windows\Temp\Sysmon.zip -DestinationPath C:\Windows\Temp\Sysmon" <br/>
+After that we Download SwiftOnSecurity's Sysmon config with these set of commands > "Invoke-WebRequest -Uri https://raw.githubusercontent.com/SwiftOnSecurity/sysmon-config/master/sysmonconfig-export.xml -OutFile C:\Windows\Temp\Sysmon\sysmonconfig.xml" <br/>
+Installing sysmon with Swift's config: "C:\Windows\Temp\Sysmon\Sysmon64.exe -accepteula -i C:\Windows\Temp\Sysmon\sysmonconfig.xml"<br/>
+Lastly we check for the presence of sysmon Event Logs : Get-WinEvent -LogName "Microsoft-Windows-Sysmon/Operational" -MaxEvents 10<br/>
+<br />
+<img src="https://i.imgur.com/RTFCNpJ.png"/>
+<img src="https://i.imgur.com/qCbiNb9.png"/>
+<img src="https://i.imgur.com/JxcYpnq.png"/>
+<br />
+Installing LimaCharlie EDR on our Windows VM: <br/>
+Creating a free LimaCharlie Account <br/>
+Once Logged into LimaCharlie, create an organization: Name: anything but must be unique > Data residency: USA > Template: Extended Detection & Response Standard <br/>
+<img src="https://i.imgur.com/vnoK5x9.png"/>
+<br/>
+Once you've created the organization we proceed to adding a sensor > Click "Add Sensor" > Now we are going to create an installation key: Select an installation key "Windows" > click create > select the installation key we just created > specify the x86-64 (.exe) > after that don't do anything or download the selected installer. <br/>
+<img src="https://i.imgur.com/bmss0H7.png"/>
+<img src="https://i.imgur.com/bf1l4NW.png"/>
+<br />
+WE go bac kto the Windows VM, open an administrative Powershell prompt and enter the following commands: "cd C:\Users\Win10 Ent\Downloads" > next we type these commands "Invoke-WebRequest -Uri https://downloads.limacharlie.io/sensor/windows/64 -Outfile C:\Users\User\Downloads\lc_sensor.exe" > now we shift to a standard command by running "cmd.exe" > next we go back to Limacharlie go to the number 4 bullet and copy the command then paste it and enter. <br/> 
+<br />
+<img src="https://i.imgur.com/LDrYtaz.png"/>
+<img src="https://i.imgur.com/bf1l4NW.png"/>
+<img src="https://i.imgur.com/RNXJqPG.png"/> 
+<br />
+Once we've done everything and worked correctly, once we go back to the LimaCharlie web UI we should be able to see a sensor reporting in like so:<br/>
+<img src="https://i.imgur.com/0quhJNQ.png"/> 
+<br />
+In this step we are going to configure Limacharlie to also ship the Sysmon event logs alongside its own EDR telemetry   <br/>
+a. in the left side menu click "Artifact Collection" <br/>
+b. click "Add Rule" > enter "windows-sysmon-logs as the name > for platforms type "Windows" > path pattern will be: wel://Microsoft-Windows-Sysmon/Operational:* > retention period will be "10" > after this click "save" <br/>
+by doing this we are now going to start shipping sysmon logs which provide a wealth of EDR-like telemetry, some of which is redundant to LC's own telemetry \. <br/>
+<br />
+Now ths will be our last step for our Part one: <br/>
+For this step I just used my host system and used SSH to access our Ubuntu VM. <br/>
+Using the static IP address of our Ubuntu we can SSH to it using this command: "ssh user@[ubuntu IP] <br/>
+Once we SSH successfully we can "sudo su" to make our life easier and have root privilege <br/>
+We proceed to download Sliver, a C2 framework by Bishopfox. We are going to use these set of commands in order to download. <br/>
+Download Sliver Linux Server binary : "wget https://github.com/BishopFox/sliver/releases/download/v1.5.34/sliver-server_linux -O /usr/local/bin/sliver-server" <br/>
+We make it executable by changing the permissions using these command: "chmod +x /usr/local/bin/sliver-server" <br/>
+I recommend installing mingw-w64 for additional capabiities: enter this command in our SSH console "apt install -y mingw-w64" <br/>
+Now lastly we create a working directory that we will use in future steps : enter this command : "mkdir -p /opt/sliver" <br/>
+<br />
+
 </p>
 
 <!--
