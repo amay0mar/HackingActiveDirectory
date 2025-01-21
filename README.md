@@ -25,13 +25,6 @@ Setting up 2 VM machine to mimic a SOC environment. One Linux VM to emulate and 
 - <b>Kali Linux (attack machine)</b>
 
 <h2>Program walk-through:</h2>
-
-
-
-
-<h3>Part Six (Detection rule & YARA scans):</h3>
-<br/>
-<br/>
 <br/>
 <br/>
 
@@ -251,11 +244,63 @@ Drill into the Timeline of your Windows VM sensor and use the “Event Type Filt
 # If our D&R rule worked successfully, the system shell will hang and fail to return anything from the whoami command, because the parent process was terminated.<br/>
 <img src="https://i.imgur.com/o9b0zZe.png"/>
 <br />
-
-
-
-
-
+<br />
+<h3>Part Five (Detection rule & YARA scans):</h3>
+# this is going to be the last part of our project. Thanks for sticking out!!! <br/>
+# YARA is a tool primarily used for identifying and classifying malware based on textual or binary patterns. It allows researchers and security professionals to craft rules that describe unique characteristics of specific malware families or malicious behaviors. These rules can then be applied to files, processes, or even network traffic to detect potential threats.<br/>
+# Within LimaCharlie, browse to “Automation” > “YARA Rules”<br/>
+<img src="https://i.imgur.com/ArKrmNW.png"/>   
+# Name the rule sliver. Copy and paste the contents of this into the Rule block<br/>
+# https://gist.githubusercontent.com/ecapuano/2c59ff1ea354f1aae905d6e12dc8e25b/raw/831d7b7b6c748f05123c6ac1a5144490985a7fe6/sliver.yara <br/>
+<img src="https://i.imgur.com/M1UOXfb.png"/>        
+# Click "Save Rule" <br/>
+<br />
+# Now create one more YARA rule that we’ll use later on for a more specific purpose <br/>
+# Name the rule sliver-process Copy and paste the contents of this gist into the Rule block.
+  https://gist.githubusercontent.com/ecapuano/f40d5a99d19500538984bd88996cfe68/raw/12587427383def9586580647de13b4a89b9d4130/sliver_broad.yara <br/>
+# Now, before we use these YARA rules, we want to setup a few generic D&R rules that will generate alerts whenever a YARA detection occurs.
+Browse to “Automation” > “D&R Rules” <br/>
+Create a new rule <br/>
+In the Detect block, paste the following <br/>
+ event: YARA_DETECTION <br/>
+ op: and <br/> 
+ rules: <br/> 
+   - not: true <br/>
+     op: exists <br/>
+     path: event/PROCESS/* <br/>
+   - op: exists <br/>
+     path: event/RULE_NAME <br/>
+# Notice that we’re detecting on YARA detections not involving a PROCESS object, that’ll be its own rule shortly.
+In the Respond block, paste the following <br/>
+  - action: report <br/>
+  name: YARA Detection {{ .event.RULE_NAME }} <br/>
+- action: add tag <br/>
+  tag: yara_detection <br/>
+  ttl: 80000 <br/> 
+<img src="https://i.imgur.com/3iUp4LN.png"/>
+# Save the rule and title it YARA Detection <br/>
+# Create another rule .In the Detect block, paste the following <br/>
+     event: YARA_DETECTION <br/>
+op: and <br/>
+rules: <br/> 
+  - op: exists <br/>
+    path: event/RULE_NAME <br/>
+  - op: exists <br/>
+    path: event/PROCESS/* <br/>
+# Notice that this detection is looking for YARA Detections specifically involving a PROCESS object. In the Respond block, paste the following<br/>
+   - action: report <br/>
+  name: YARA Detection in Memory {{ .event.RULE_NAME }} <br/>
+- action: add tag <br/>
+  tag: yara_detection_memory <br/>
+  ttl: 80000 <br/>
+<img src="https://i.imgur.com/wvDHkZk.png"/>
+# Let’s test our new YARA signature <br/>
+# In LimaCharlie, browse to the “Sensors List” and click on our Windows VM sensor <br/> 
+<img src="https://i.imgur.com/mw8Cnjn.png"/>
+# Access the EDR Sensor Console which allows us to run sensor commands against this endpoint <br/>
+<img src="https://i.imgur.com/g4jIaLk.png"/>
+# Run the following command to kick off a manual YARA scan of our Sliver payload. You will need to know the name of your Sliver executable created in Part 2 <br/> 
+# Replace [payload_name] with your actual payload name <br/>
 
 
 
