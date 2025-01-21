@@ -301,6 +301,17 @@ rules: <br/>
 <img src="https://i.imgur.com/g4jIaLk.png"/>
 # Run the following command to kick off a manual YARA scan of our Sliver payload. You will need to know the name of your Sliver executable created in Part 2 <br/> 
 # Replace [payload_name] with your actual payload name <br/>
+<img src="https://i.imgur.com/P9gXOXS.png"/>
+# Hit enter twice to execute this command. Ideally, your output looks similar to mine below, indicating a positive hit on one of the signatures contained within the Sliver YARA rule. 
+<img src="https://i.imgur.com/5ZXI2bt.png"/>
+# Now, also confirm that you have a new Detection on the “Detections” screen <br/>
+<img src="https://i.imgur.com/9mHyl6q.png"/>
+# Since we already know we have a Sliver implant sitting in the Downloads folder of our Windows VM, we can easily test our signature by initiating a manual YARA scan using the EDR sensor. This will give us a sanity check that all things are working up to this point. Also, We automated this process. 
+
+<h2>If you read my entire project Thank you so much for sticking out! I know it was boring but hope you learned a few things from it!!! </h2>
+
+
+
 
 
 
