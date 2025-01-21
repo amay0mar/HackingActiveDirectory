@@ -26,7 +26,7 @@ Setting up 2 VM machine to mimic a SOC environment. One Kali Linux VM to emulate
 
 <h2>Program walk-through:</h2>
 
-<h3>Part Two (Generating C2 Payload):</h3>
+
 <h3>Part Three (Emulating an adversary):</h3>
 <h3>Part Four (Blocking an attack):</h3>
 <h3>Part Five (False Positive tuning in LimaCharlie):</h3>
@@ -131,6 +131,11 @@ Now ths will be our last step for our Part one: <br/>
 # I recommend installing mingw-w64 for additional capabiities: enter this command in our SSH console "apt install -y mingw-w64" <br/>
 # Now lastly we create a working directory that we will use in future steps : enter this command : "mkdir -p /opt/sliver" <br/>
 <br />
+<br />
+<br />
+<h3>Part Two (Generating C2 Payload):</h3>
+<br />
+
 
 </p>
 
