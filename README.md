@@ -4,7 +4,7 @@
  
 
 <h2>Description</h2>
-Setting up 2 VM machine to mimic a SOC environment. One Kali Linux VM to emulate and attacker. Installing Sysmon on Windows VM for telemetry on our Windows endpoint. Installing LimaCharlie EDR on our Windows VM using as a cross-platform EDR agent, that also handles all of the log shipping/ingestion and a plus having a threat detection engine. Using our Kali Linux VM we are going to make some noise, generating C2 payload and and then proceeding to our command and control session. We will also craft our own detection rules and proceeding to block any attacks. Lastly we are going to use some YARA scanning, the goal is to take advantage of a more advanced capability. To automatically scan files or processes for the presence of malware based on a YARA signature. 
+Setting up 2 VM machine to mimic a SOC environment. One Linux VM to emulate and attacker. Installing Sysmon on Windows VM for telemetry on our Windows endpoint. Installing LimaCharlie EDR on our Windows VM using as a cross-platform EDR agent, that also handles all of the log shipping/ingestion and a plus having a threat detection engine. Using our Kali Linux VM we are going to make some noise, generating C2 payload and and then proceeding to our command and control session. We will also craft our own detection rules and proceeding to block any attacks. Lastly we are going to use some YARA scanning, the goal is to take advantage of a more advanced capability. To automatically scan files or processes for the presence of malware based on a YARA signature. 
 
 <br />
 
@@ -28,7 +28,7 @@ Setting up 2 VM machine to mimic a SOC environment. One Kali Linux VM to emulate
 
 
 
-<h3>Part Four (Blocking an attack):</h3>
+
 <h3>Part Six (Detection rule & YARA scans):</h3>
 <br/>
 <br/>
@@ -186,6 +186,70 @@ Click “Timeline” on the left-side menu of our sensor. This is a near real-ti
 <img src="https://i.imgur.com/C8w7mo3.png"/>
 <br /> 
 <h3>Part Three (Emulating an adversary):</h3>
+<br />
+# Let's jump back into our Sliver C2 session where we used our SSH <br/>
+# We will run the following commands within Sliver session on our victim host. Like what we did in our previous steps I went and checked our privileges by typing the command "getprivs" Once we confirm Admin privileges. We can run "procdump -n lsass.exe -s lsass.dmp" <br/>
+# This will dump the remote process from memory, and save it locally on your Sliver C2 server. Now we can move on back to our Lima Charlie and find relevant telemetry. <br/>
+<br /> 
+# Since lsass.exe is a known sensitive process often targeted by credential dumping tools, any good EDR will generate events for this.
+Drill into the Timeline of your Windows VM sensor and use the “Event Type Filters” to filter for “SENSITIVE_PROCESS_ACCESS” events.<br/>
+<br/>
+<img src="https://i.imgur.com/E54Epf3.png"/>
+<br/>
+# Now that we know what the event looks like when credential access occurred, we have what we need to craft a detection & response (D&R) rule that would alert anytime this activity occurs.<br/>
+# Click the event a small popup show up and click the detect button on the top right of the pop-up window to begin building a detection rule based on this event.<br/>
+# In the “Detect” section of the new rule, remove all contents and replace them with this :<br/>
+  event: SENSITIVE_PROCESS_ACCESS<br/>
+  op: ends with<br/>
+  path: event/*/TARGET/FILE_PATH<br/>
+  value: lsass.exe<br/>
+<br/>
+# We’re specifying that this detection should only look at SENSITIVE_PROCESS_ACCESS events where the victim or target process ends with lsass.exe<br/>
+# In the “Respond” section of the new rule, remove all contents and replace them with this<br/>
+  - action: report<br/>
+    name: LSASS access<br/>
+# We’re telling LimaCharlie to simply generate a detection “report” anytime this detection occurs<br/>
+<br/>
+# Now let’s test our rule against the event we built it for. Click “Target Event” below the D&R rule we just wrote.<br/>
+# Scroll to the bottom of the raw event and click “Test Event” to see if our detection would work against this event.<br/>
+<img src="https://i.imgur.com/6iosL65.png"/>
+<br/>
+# Scroll back up and click “Save Rule” and give it the name “LSASS Accessed” and be sure it is enabled. <br/>
+# We return to our Sliver server console, back into your C2 session, and rerun our same procdump command from our previous steps.<br/>
+# After rerunning the procdump command, go to the “Detections” tab on the LimaCharlie main left-side menu.<br/>
+# We've just detected a threat with our own detection signature! Expand the detection if we want to see the raw event.<br/>
+<img src="https://i.imgur.com/Jv0VjW1.png"/>
+<br /> 
+<h3>Part Four (Blocking an attack):</h3>
+<br />
+# We get back onto an SSH session on the Linux VM, and drop into a C2 session with our victim. In our Sliver C2 shell on the victim, run the basic command we’re looking to detect and block. Type the command "shell"<br/>
+# When prompted with “This action is bad OPSEC, are you an adult?” type Y and hit enter. <br/>
+# In the new System shell, run the following command: "vssadmin delete shadows /all" NOTE: The output is not important as there may or not be Volume Shadow Copies available on the VM to be deleted, but running the command is sufficient to generate the telemetry we need.<br/>
+# Run the whoami command to verify we still have an active system shell. Type the command "whoami"<br/>
+<br/>
+<img src="https://i.imgur.com/VUrNMSP.png"/>
+<br/>
+# Now we return to our LC Web UI and go to our detection tab to see if default Sigma picked up on our shenanigans. On our photo below we can see the event "shadow copies deletion"<br/>
+<img src="https://i.imgur.com/TFxJSHm.png"/>
+<br/>
+# Click to expand the detection and examine all of the metadata contained within the detection itself. One of the great things about Sigma rules is they are enriched with references to help you understand why the detection exists in the first place.<br/>
+# View the offending event in the Timeline to see the raw event that generated this detection.<br/>
+# Once we are in the timeline, we can again craft a detection & response D&R rule from this event. for this follow our previous steps. <br/>
+# Now looking at D&R rule template, we can begin crafting our response action that will take place when this activity is observed. <br/>
+# Add the following Response rule to the Respond section:<br/>
+  - action: report <br/>
+  name: vss_deletion_kill_it <br/>
+- action: task<br/>
+  command:<br/>
+    - deny_tree<br/>
+    - <<routing/parent>><br/>
+# we save our rule with the following name: vss_deletion_kill_it <br/>
+<br/>
+# Now return to our Sliver C2 session, and rerun the "vssadmin delete shadows /all" command and see what happens.<br/>
+# The command should succeed, but the action of running the command is what will trigger our D&R rule <br/>
+# we can test if our D&R rule properly terminated the parent process, check to see if you still have an active system shell by rerunning the "whoami" command.<br/>
+# If our D&R rule worked successfully, the system shell will hang and fail to return anything from the whoami command, because the parent process was terminated.<br/>
+<img src="https://i.imgur.com/o9b0zZe.png"/>
 <br />
 
 
